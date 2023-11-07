@@ -2,36 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\TaskDTO;
+use App\Http\Requests\CreateTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskController extends BaseController
 {
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(): JsonResource
     {
-        $tasks = Task::all();
+        $tasks = $this->service->getAllTasks();
 
-        return response()->json($tasks);
+        return TaskResource::collection($tasks);
     }
 
-    public function store()
+    public function store(CreateTaskRequest $request): TaskResource
     {
-        // Store a new task based on the form data
+        $data = $request->validated();
+        $taskDTO = new TaskDTO(...$data);
+        $task = $this->service->createTask($taskDTO);
+        return new TaskResource($task);
     }
 
-    public function update()
+    public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
-        // Update the specified task based on the form data
+        $data = $request->validated();
+        $data['updated_at'] = Carbon::now();
+        $taskDTO = new TaskDTO(...$data);
+        $task = $this->service->updateTask($taskDTO, $id);
+        return new TaskResource($task);
     }
 
-    public function markAsDone()
+    /**
+     * @throws \Exception
+     */
+    public function markAsDone(int $id): TaskResource
     {
-        // Mark the specified task as done
+        $task = $this->service->markTaskAsDone($id);
+        return new TaskResource($task);
     }
 
-    public function destroy()
+    /**
+     * @throws \Exception
+     */
+    public function destroy(int $id): bool
     {
-        // Delete the specified task
+        return $this->service->deleteTask($id);
     }
 }

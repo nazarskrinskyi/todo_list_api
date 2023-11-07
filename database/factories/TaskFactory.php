@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\TaskStatusEnum;
+use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,6 +21,7 @@ class TaskFactory extends Factory
     {
         return [
             'status' => $status = $this->faker->randomElement(TaskStatusEnum::values()),
+            'parent_id' => $this->faker->numberBetween(1, 10),
             'priority' => $this->faker->numberBetween(1, 5),
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,

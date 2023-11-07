@@ -12,6 +12,6 @@ interface TaskRepositoryInterface
 
     public function createTask(TaskDTO $taskDTO): Task;
 
-    public function updateTask(TaskDTO $taskDTO): Task;
+    public function updateTask(TaskDTO $taskDTO, int $task_id): Task;
 
 }

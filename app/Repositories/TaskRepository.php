@@ -17,35 +17,31 @@ class TaskRepository implements TaskRepositoryInterface
     public function createTask(TaskDTO $taskDTO): Task
     {
         $task = new Task();
-        $task->id = $taskDTO->id;
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
         $task->parent_id = $taskDTO->parent_id;
         $task->user_id = $taskDTO->user_id;
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
-        $task->created_at = $taskDTO->created_at;
-        $task->completed_at = $taskDTO->completed_at;
-        $task->updated_at = $taskDTO->updated_at;
 
         $task->save();
 
         return $task;
     }
 
-    public function updateTask(TaskDTO $taskDTO): Task
+    public function updateTask(TaskDTO $taskDTO, int $task_id): Task
     {
-        $task = Task::findOrFail($taskDTO->id);
+        $task = Task::findOrFail($task_id);
 
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
-        $task->parent_id = $taskDTO->parent_id;
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
         $task->updated_at = $taskDTO->updated_at;
 
 
         $task->save();
+
 
         return $task;
     }
