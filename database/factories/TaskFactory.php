@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaskStatusEnum;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,12 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'status' => $status = $this->faker->randomElement(TaskStatusEnum::values()),
+            'priority' => $this->faker->numberBetween(1, 5),
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+            'user_id' => \App\Models\User::factory(),
+            'completed_at' => $status === TaskStatusEnum::DONE ? Carbon::now() : null,
         ];
     }
 }

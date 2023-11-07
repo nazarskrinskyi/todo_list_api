@@ -6,27 +6,36 @@ use App\Enums\TaskStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static find(mixed $taskId)
+ * @method static findOrFail(mixed $taskId)
+ * @property mixed $user_id
+ */
 class Task extends Model
 {
     use HasFactory;
 
     protected $guarded = false;
 
-    protected $table = 'tasks';
-
     protected $fillable = [
-      'status',
+        'title',
+        'description',
+        'status',
+        'priority',
+        'create_at',
+        'updated_at',
+        'completed_at'
     ];
 
 
-    public function getStatusAttribute(string $value): TaskStatusEnum
+    public function setStatusAttribute($property): void
     {
-        return TaskStatusEnum::from($value);
+        if ($property instanceof TaskStatusEnum) {
+            $this->attributes['status'] = $property->value;
+        } else {
+            $this->attributes['status'] = $property;
+        }
     }
 
-    public function setStatusAttribute(TaskStatusEnum $status): void
-    {
-        $this->attributes['status'] = $status->value;
-    }
 
 }
