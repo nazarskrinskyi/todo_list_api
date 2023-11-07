@@ -2,19 +2,16 @@
 
 namespace App\Enums;
 
-use Spatie\Enum\Enum;
-
-/**
- * @method static self TODO()
- * @method static self DONE()
- */
-class TaskStatusEnum extends Enum
+class TaskStatusEnum
 {
-    protected static function values(): array
+    public const TODO = 'todo';
+    public const DONE = 'done';
+
+    public static function values(): array
     {
         return [
-            'TODO' => 'todo',
-            'DONE' => 'done',
+            self::TODO,
+            self::DONE,
         ];
     }
 }
