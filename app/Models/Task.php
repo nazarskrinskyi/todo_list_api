@@ -27,7 +27,18 @@ class Task extends Model
         'completed_at'
     ];
 
+    // Set up cascading deletes for subtasks
+    protected static function boot(): void
+    {
+        parent::boot();
 
+        static::deleting(function ($task) {
+            // Cascade delete to subtasks
+            $task->subtasks->each(function ($subtask) {
+                $subtask->delete();
+            });
+        });
+    }
     public function setStatusAttribute($property): void
     {
         if ($property instanceof TaskStatusEnum) {
