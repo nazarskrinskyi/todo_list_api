@@ -20,13 +20,14 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::group([
-        'prefix' => 'tasks'
-    ], function () {
-        Route::get('/', [TaskController::class, 'index']);
-        Route::post('/', [TaskController::class, 'store']);
-        Route::put('/{task}', [TaskController::class, 'update']);
-        Route::put('/{task}/done', [TaskController::class, 'markAsDone']);
-        Route::delete('/{task}', [TaskController::class, 'destroy']);
-    });
+
+});
+Route::group([
+    'prefix' => 'tasks'
+], function () {
+    Route::get('/', [TaskController::class, 'index']);
+    Route::post('/', [TaskController::class, 'store']);
+    Route::put('/{task}', [TaskController::class, 'update']);
+    Route::put('/{task}/done', [TaskController::class, 'markAsDone']);
+    Route::delete('/{task}', [TaskController::class, 'destroy']);
 });

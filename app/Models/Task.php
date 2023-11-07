@@ -36,6 +36,14 @@ class Task extends Model
             $this->attributes['status'] = $property;
         }
     }
+    public function subtasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Task::class, 'parent_id');
+    }
 
+    public function parentTask(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'parent_id');
+    }
 
 }
