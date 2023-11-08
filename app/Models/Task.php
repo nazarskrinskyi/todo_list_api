@@ -8,27 +8,41 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static find(mixed $taskId)
- * @method static findOrFail(mixed $taskId)
- * @property mixed $user_id
+ * Task Model represents individual tasks in the application.
+ *
+ * @method static find(mixed $taskId) - Find a task by its ID.
+ * @method static findOrFail(mixed $taskId) - Find a task by its ID or throw an exception if not found.
+ * @property mixed $user_id - User ID associated with the task.
  */
 class Task extends Model
 {
-    use HasFactory,Filterable;
+    use HasFactory, Filterable;
 
-    protected $guarded = false;
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'title',
-        'description',
-        'status',
-        'priority',
-        'create_at',
-        'updated_at',
-        'completed_at'
+        'title', // Task title
+        'description', // Task description
+        'status', // Task status (todo, done)
+        'priority', // Task priority (1...5)
+        'created_at', // Task creation timestamp
+        'updated_at', // Task last update timestamp
+        'completed_at' // Task completion timestamp
     ];
 
-    // Set up cascading deletes for subtasks
+    /**
+     * Disable mass assignment protection for all attributes.
+     *
+     * @var bool
+     */
+    protected $guarded = false;
+
+    /**
+     * Set up cascading deletes for subtasks.
+     */
     protected static function boot(): void
     {
         parent::boot();
@@ -40,6 +54,12 @@ class Task extends Model
             });
         });
     }
+
+    /**
+     * Mutator to set the 'status' attribute with TaskStatusEnum instance or string value.
+     *
+     * @param mixed $property
+     */
     public function setStatusAttribute($property): void
     {
         if ($property instanceof TaskStatusEnum) {
@@ -48,14 +68,24 @@ class Task extends Model
             $this->attributes['status'] = $property;
         }
     }
+
+    /**
+     * Define a one-to-many relationship with subtasks.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function subtasks(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Task::class, 'parent_id');
     }
 
+    /**
+     * Define a many-to-one relationship with parent task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function parentTask(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Task::class, 'parent_id');
     }
-
 }

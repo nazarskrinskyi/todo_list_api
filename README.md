@@ -43,6 +43,12 @@ Database:
 
     Use database seeding and indexes for efficient data retrieval.
 
+## All steps by step
+
+### API має надавати можливість:
+
+
+
 ## API Endpoints
 
 Get Tasks
@@ -89,29 +95,39 @@ composer require laravel/sanctum
 
 ## Installation and Setup
 
-    Clone the repository: git clone https://github.com/nazarskrinskyi/todo_list_api
-    Navigate to the project directory: cd todo-list-api
-    Copy the .env.example file to .env and configure the database settings.
-    Install dependencies: composer install
-    Generate an application key: php artisan key:generate
-    Run migrations: php artisan migrate
-    Seed the database: php artisan db:seed
-    Start the development server: php artisan serve
+Clone the repository:
 
+    git clone https://github.com/nazarskrinskyi/todo_list_api
 
+Navigate to the project directory:
 
-To run the application using Docker, make sure you have Docker and Docker Compose installed on your system. Then, follow these steps:
+    cd todo-list-api
+
+Install dependencies:
+
+    composer install
 
 Build the Docker containers:
+
+    ./vendor/bin/sail build
+
+Run docker:
+
+     ./vendor/bin/sail  up -d
+     ./vendor/bin/sail  bash
+
+Run migrations:
+
+    php artisan migrate
     
-    docker-compose build
+Seed the database:
     
-Start the Docker containers:
+    php artisan db:seed
 
-    docker-compose up -d
+Start the development server:
+    
+    npm run dev
 
-Run migrations and seed the database inside the Docker container: 
 
-    docker-compose exec app php artisan migrate --seed
 
 The API will be accessible at http://localhost.
