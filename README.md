@@ -1,66 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Todo List API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a RESTful API for managing tasks and subtasks. The API allows users to create tasks, edit them, mark them as completed, and delete them. Users can filter tasks based on status, priority, title, and description, and sort them by createdAt, completedAt, and priority. Tasks can have subtasks with unlimited nesting levels.
+Features
 
-## About Laravel
+Get Tasks:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    Retrieve a list of tasks based on specified filters, sorting, and search parameters.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Create Task:
+    
+    Create a new task with title, description, priority, and optional subtasks.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Edit Task:
 
-## Learning Laravel
+    Modify the title, description, priority, or subtasks of an existing task.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Mark Task as Completed:
+    
+    Set a task's status to "done."
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Delete Task:
+    
+    Delete a task and its subtasks.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Filtering:
+    
+    Filter tasks by status, priority, title, and description.
 
-## Laravel Sponsors
+Sorting:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    Sort tasks by createdAt, completedAt, and priority in ascending or descending order.
 
-### Premium Partners
+Subtasks:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    Tasks can have subtasks with the same properties as tasks.
+    
+Validation:
+    
+    Input data is validated to ensure consistency and integrity.
+    
+Database:
 
-## Contributing
+    Use database seeding and indexes for efficient data retrieval.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## API Endpoints
 
-## Code of Conduct
+Get Tasks
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    GET /api/tasks?status=todo&priority=3&title=example&sort=priority desc,createdAt asc
 
-## Security Vulnerabilities
+Create Task
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    POST /api/tasks
+    {
+    "title": "Example Task",
+    "description": "Task description",
+    "priority": 3,
+    "subtasks": [
+    {
+    "title": "Subtask 1",
+    "priority": 2
+    }
+    ]
+    }
 
-## License
+Edit Task
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    PUT /api/tasks/{taskId}
+    {
+    "title": "Updated Task Title"
+    }
+
+Mark Task as Completed
+
+
+    PUT /api/tasks/{taskId}/complete
+
+Delete Task
+
+    DELETE /api/tasks/{taskId}
+
+
+## Packages that I used
+composer require laravel/ui                                        
+php artisan ui vue --auth
+
+## Installation and Setup
+
+    Clone the repository: git clone https://github.com/nazarskrinskyi/todo_list_api
+    Navigate to the project directory: cd todo-list-api
+    Copy the .env.example file to .env and configure the database settings.
+    Install dependencies: composer install
+    Generate an application key: php artisan key:generate
+    Run migrations: php artisan migrate
+    Seed the database: php artisan db:seed
+    Start the development server: php artisan serve
+
+
+
+To run the application using Docker, make sure you have Docker and Docker Compose installed on your system. Then, follow these steps:
+
+Build the Docker containers:
+    
+    docker-compose build
+    
+Start the Docker containers:
+
+    docker-compose up -d
+
+Run migrations and seed the database inside the Docker container: 
+
+    docker-compose exec app php artisan migrate --seed
+
+The API will be accessible at http://localhost.
