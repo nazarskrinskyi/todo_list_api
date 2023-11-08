@@ -84,6 +84,8 @@ Delete Task
 ## Packages that I used
 composer require laravel/ui                                        
 php artisan ui vue --auth
+composer require laravel/sanctum
+
 
 ## Installation and Setup
 

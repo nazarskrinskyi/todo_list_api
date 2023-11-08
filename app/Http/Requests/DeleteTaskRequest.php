@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTaskRequest extends FormRequest
+class DeleteTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -12,7 +12,7 @@ class UpdateTaskRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        return $user !== null && $user->tokenCan('update');
+        return $user !== null && $user->tokenCan('delete');
     }
 
     /**
@@ -23,11 +23,7 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|string',
-            'priority' => 'required|integer',
-            'user_id' => 'nullable|exists:users,id'
+            'user_id' => 'required|exists:users,id'
         ];
     }
 }
