@@ -43,44 +43,212 @@ Database:
 
     Use database seeding and indexes for efficient data retrieval.
 
-## All steps by step
+## API must follow these requirements:
 
-### API має надавати можливість:
+## 1.Retrieve a List of Tasks Based on Filters:
+
+#### [For this task I created Flexible Filter Builder that handle filtering for any field]
+### Code Implementation:
 
 
+- The filtering logic is implemented in the TaskFilter
+class located in the App\Http\Filters namespace.
+This class extends the AbstractFilter
+class and defines specific filter methods for each parameter (title,
+description, status, priority, created_at, completed_at).
+
+- These methods manipulate the query builder instance to apply the corresponding filters.
+
+### Example Usage:
+```http request
+POST /tasks?title=query&status=todo&priority=desc&created_at=asc
+```
+#### Response:
+```json
+[
+{
+"id": 1,
+"title": "Sample Task",
+"description": "Task Description",
+"status": "todo",
+"priority": 3,
+"created_at": "2023-11-08T12:00:00Z",
+"updated_at": "2023-11-08T13:00:00Z",
+"completed_at": null,
+"user_id": 1,
+"parent_id": null
+}
+]
+```
+## 2.Create task Functionality: 
+
+The API allows creating new tasks by sending a POST request to the /tasks/store endpoint. Include the task details such as title, description, status, priority, user_id, and optionally, parent_id for subtasks. Validation rules ensure the request contains valid data.
+
+## Code Implementation:
+
+- The CreateTaskRequest class in the App\Http\Requests namespace defines the validation rules for creating a task. It ensures the request contains necessary fields such as title, description, user_id, status, and priority.
+
+- The TaskController class in the App\Http\Controllers namespace handles the creation logic. When a valid request is received, it creates a TaskDTO object, passing the received data, and calls the createTask method of the TaskService class.
+
+### Example Request:
+
+```http request
+POST /tasks/store
+Content-Type: application/json
+
+```
+```json
+{
+"title": "New Task",
+"description": "Task Description",
+"status": "todo",
+"priority": 2,
+"user_id": 1,
+"parent_id": null
+}
+```
+### Response:
+
+```json
+{
+"id": 2,
+"title": "New Task",
+"description": "Task Description",
+"status": "todo",
+"priority": 2,
+"created_at": "2023-11-08T14:00:00Z",
+"updated_at": null,
+"completed_at": null,
+"user_id": 1,
+"parent_id": null
+}
+```
+## 3.Edit Task Functionality:
+
+Existing tasks can be updated using a PUT or PATCH request to the /tasks/{id} endpoint. Provide the id of the task to be updated and the updated task details. Only the task owner can edit the task.
+
+### Code Implementation:
+
+- The UpdateTaskRequest class in the App\Http\Requests namespace defines the validation rules for updating a task. It ensures the request contains necessary fields such as title, description, user_id, status, and priority.
+
+- The TaskController class in the App\Http\Controllers namespace handles the update logic. When a valid request is received, it creates a TaskDTO object, passing the received data, and calls the updateTask method of the TaskService class.
+
+### Example Request:
+
+```http request
+PUT /tasks/2
+Content-Type: application/json
+```
+
+```json
+{
+"title": "Updated Task",
+"description": "Updated Description",
+"status": "done",
+"priority": 1,
+"user_id": 1
+}
+
+```
+
+### Response:
+
+```json
+{
+"id": 2,
+"title": "Updated Task",
+"description": "Updated Description",
+"status": "done",
+"priority": 1,
+"created_at": "2023-11-08T14:00:00Z",
+"updated_at": "2023-11-08T15:00:00Z",
+"completed_at": "2023-11-08T15:00:00Z",
+"user_id": 1,
+"parent_task_id": null
+}
+```
+
+## 4.Mark as Done Task Functionality:
+
+A task can be marked as done by sending a PUT or PATCH request to the /tasks/{id}/done endpoint. The task status will be updated to done, and the completed_at timestamp will be set to the current time. Only tasks without uncompleted subtasks can be marked as done.
+
+### Code Implementation:
+
+- The TaskService class contains the markTaskAsDone method. This method checks if the task has uncompleted subtasks before marking it as done. If the task has uncompleted subtasks, an exception is thrown.
+- The TaskController class in the App\Http\Controllers namespace handles the marking as done logic. When a valid request is received, it calls the markTaskAsDone method of the TaskService class.
+
+### Example Request:
+
+```http request
+PUT /tasks/2/done
+```
+
+### Response:
+
+```json
+{
+  "id": 2,
+  "title": "Updated Task",
+  "description": "Updated Description",
+  "status": "done",
+  "priority": 1,
+  "created_at": "2023-11-08T14:00:00Z",
+  "updated_at": "2023-11-08T15:00:00Z",
+  "completed_at": "2023-11-08T15:00:00Z",
+  "user_id": 1,
+  "parent_task_id": null
+}
+
+```
+
+
+## 5.Mark as Done Task Functionality:
+
+A task can be deleted by sending a DELETE request to the /tasks/{id} endpoint. Only tasks that are not done can be deleted. If the task is done, an exception is thrown.
+
+### Code Implementation:
+
+- The TaskService class contains the deleteTask method. This method checks if the task is done before allowing deletion. If the task is done, an exception is thrown
+- The TaskController class in the App\Http\Controllers namespace handles the deletion logic. When a valid request is received, it calls the deleteTask method of the TaskService class.
+
+### Example Request:
+
+```http request
+DELETE /tasks/2
+Content-Type: application/json
+
+{
+    "user_id": 1
+}
+```
+
+### Response:
+
+```json
+{
+  "message": "Task deleted successfully."
+}
+
+```
 
 ## API Endpoints
 
 Get Tasks
 
-    GET /api/tasks?status=todo&priority=3&title=example&sort=priority desc,createdAt asc
+    POSt /api/tasks?status=todo&priority=3&title=example&sort=priority desc,createdAt asc
 
 Create Task
 
-    POST /api/tasks
-    {
-    "title": "Example Task",
-    "description": "Task description",
-    "priority": 3,
-    "subtasks": [
-    {
-    "title": "Subtask 1",
-    "priority": 2
-    }
-    ]
-    }
+    POST /api/tasks/store
 
 Edit Task
 
     PUT /api/tasks/{taskId}
-    {
-    "title": "Updated Task Title"
-    }
+    
 
 Mark Task as Completed
 
-
-    PUT /api/tasks/{taskId}/complete
+    PUT /api/tasks/{taskId}/done
 
 Delete Task
 
@@ -88,10 +256,10 @@ Delete Task
 
 
 ## Packages that I used
+```bash 
 composer require laravel/ui                                        
-php artisan ui vue --auth
 composer require laravel/sanctum
-
+```
 
 ## Installation and Setup
 

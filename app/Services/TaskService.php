@@ -8,6 +8,7 @@ use App\Http\Filters\TaskFilter;
 use App\Models\Task;
 use App\Repositories\TaskRepositoryInterface;
 use Carbon\Carbon;
+use http\Env\Response;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -133,12 +134,11 @@ class TaskService
      *
      * @param int $task_id
      * @param int $user_id
-     * @return bool
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function deleteTask(int $task_id, int $user_id): bool
+    public function deleteTask(int $task_id, int $user_id): \Illuminate\Http\JsonResponse
     {
-        // Find the task by its ID
         try {
             $task = Task::findOrFail($task_id);
 
@@ -151,7 +151,7 @@ class TaskService
             if ($task->status !== TaskStatusEnum::DONE) {
                 // Delete the task
                 $task->delete();
-                return true;
+                return response()->json(['message' => 'Task deleted successfully.']);
             } else {
                 // If task is done, throw an exception
                 throw new \Exception("This task is done and cannot be deleted.");
