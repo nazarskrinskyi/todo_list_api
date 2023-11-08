@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\DTO\TaskDTO;
 use App\Http\Filters\TaskFilter;
 use App\Http\Requests\CreateTaskRequest;
+use App\Http\Requests\DeleteTaskRequest;
 use App\Http\Requests\FilterTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
 {
@@ -38,9 +37,11 @@ class TaskController extends BaseController
     public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
         $data = $request->validated();
+        $user_id = $data['user_id'];
+        unset($data['user_id']);
         $data['updated_at'] = Carbon::now();
         $taskDTO = new TaskDTO(...$data);
-        $task = $this->service->updateTask($taskDTO, $id, Auth::id());
+        $task = $this->service->updateTask($taskDTO, $id, $user_id);
         return new TaskResource($task);
     }
 
@@ -56,8 +57,9 @@ class TaskController extends BaseController
     /**
      * @throws \Exception
      */
-    public function destroy(int $id): bool
+    public function destroy(DeleteTaskRequest $request, int $id): bool
     {
-        return $this->service->deleteTask($id, Auth::id());
+        $data = $request->validated();
+        return $this->service->deleteTask($id, $data['user_id']);
     }
 }

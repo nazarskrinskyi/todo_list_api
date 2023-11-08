@@ -120,21 +120,4 @@ class TaskService
         }
     }
 
-    public function getTaskTree(int $parentId = null): array
-    {
-        $tasks = Task::where('parent_id', $parentId)->get();
-        $taskTree = [];
-
-        foreach ($tasks as $task) {
-            $subtasks = $this->getTaskTree($task->id);
-            $taskTree[] = [
-                'id' => $task->id,
-                'title' => $task->title,
-                'description' => $task->description,
-                'subtasks' => $subtasks,
-            ];
-        }
-
-        return $taskTree;
-    }
 }
