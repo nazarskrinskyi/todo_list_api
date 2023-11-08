@@ -3,18 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\DTO\TaskDTO;
+use App\Http\Filters\TaskFilter;
 use App\Http\Requests\CreateTaskRequest;
+use App\Http\Requests\FilterTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
 {
-    public function index(): JsonResource
+    public function index(FilterTaskRequest $request): JsonResource
     {
-        $tasks = $this->service->getAllTasks();
+        $data = $request->validated();
+
+        $tasks = $this->service->getAllTasks($data);
 
         return TaskResource::collection($tasks);
     }
@@ -27,12 +32,15 @@ class TaskController extends BaseController
         return new TaskResource($task);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
         $data = $request->validated();
         $data['updated_at'] = Carbon::now();
         $taskDTO = new TaskDTO(...$data);
-        $task = $this->service->updateTask($taskDTO, $id);
+        $task = $this->service->updateTask($taskDTO, $id, Auth::id());
         return new TaskResource($task);
     }
 
@@ -50,6 +58,6 @@ class TaskController extends BaseController
      */
     public function destroy(int $id): bool
     {
-        return $this->service->deleteTask($id);
+        return $this->service->deleteTask($id, Auth::id());
     }
 }

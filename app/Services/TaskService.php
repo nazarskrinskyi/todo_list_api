@@ -4,13 +4,12 @@ namespace App\Services;
 
 use App\DTO\TaskDTO;
 use App\Enums\TaskStatusEnum;
+use App\Http\Filters\TaskFilter;
 use App\Models\Task;
 use App\Repositories\TaskRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use function Laravel\Prompts\error;
 
 class TaskService
 {
@@ -21,9 +20,11 @@ class TaskService
         $this->taskRepository = $taskRepository;
     }
 
-    public function getAllTasks(): Collection
+    public function getAllTasks($data): Collection
     {
-        return $this->taskRepository->getAllTasks();
+        $filter = app()->make(TaskFilter::class, ['queryParams' => array_filter($data)]);
+        $filter_query = Task::filter($filter);
+        return $filter_query->get();
     }
 
     public function createTask(TaskDTO $taskDTO): Task
@@ -31,8 +32,16 @@ class TaskService
         return $this->taskRepository->createTask($taskDTO);
     }
 
-    public function updateTask(TaskDTO $taskDTO, int $task_id): Task
+    /**
+     * @throws \Exception
+     */
+    public function updateTask(TaskDTO $taskDTO, int $task_id, int $user_id): Task
     {
+        $task = Task::findOrFail($task_id);
+        // Перевірка чи завдання належить користувачеві
+        if ($task->user_id !== $user_id) {
+            throw new \Exception("You don't have permission to update this task.");
+        }
         return $this->taskRepository->updateTask($taskDTO, $task_id);
     }
 
@@ -90,10 +99,15 @@ class TaskService
      * @return bool
      * @throws \Exception
      */
-    public function deleteTask(int $task_id): bool
+    public function deleteTask(int $task_id, int $user_id): bool
     {
         try {
             $task = Task::findOrFail($task_id);
+
+            // Перевірка чи завдання належить користувачеві
+            if ($task->user_id !== $user_id) {
+                throw new \Exception("You don't have permission to delete this task.");
+            }
 
             if ($task->status !== TaskStatusEnum::DONE) {
                 $task->delete();
