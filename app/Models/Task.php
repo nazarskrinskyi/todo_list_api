@@ -60,7 +60,7 @@ class Task extends Model
      *
      * @param mixed $property
      */
-    public function setStatusAttribute($property): void
+    public function setStatusAttribute(mixed $property): void
     {
         if ($property instanceof TaskStatusEnum) {
             $this->attributes['status'] = $property->value;
