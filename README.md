@@ -231,6 +231,7 @@ Navigate to the project directory:
 Install dependencies:
 
     composer install
+    npm install 
 
 Build the Docker containers:
 
