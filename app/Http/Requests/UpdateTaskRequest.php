@@ -27,7 +27,6 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => 'required|string',
             'priority' => 'required|integer',
-            'user_id' => 'nullable|exists:users,id'
         ];
     }
 }

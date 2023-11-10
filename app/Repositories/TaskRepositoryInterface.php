@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface TaskRepositoryInterface
 {
-    public function getAllTasks(): Collection;
+    public function getFilteredTasks(array $data): Collection;
+    public function getTaskById(int $task_id): Task;
 
     public function createTask(TaskDTO $taskDTO): Task;
 

@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\DTO\TaskDTO;
 use App\Enums\TaskStatusEnum;
-use App\Http\Filters\TaskFilter;
 use App\Models\Task;
 use App\Repositories\TaskRepositoryInterface;
 use Carbon\Carbon;
-use http\Env\Response;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -35,14 +33,9 @@ class TaskService
      * @param array $data
      * @return Collection
      */
-    public function getAllTasks($data): Collection
+    public function getAllTasks(array $data): Collection
     {
-        // Create a TaskFilter instance with filtered query parameters
-        $filter = app()->make(TaskFilter::class, ['queryParams' => array_filter($data)]);
-        // Apply filters to Task model using the TaskFilter instance
-        $filter_query = Task::filter($filter);
-        // Retrieve filtered tasks
-        return $filter_query->get();
+       return $this->taskRepository->getFilteredTasks($data);
     }
 
     /**
@@ -69,7 +62,8 @@ class TaskService
     public function updateTask(TaskDTO $taskDTO, int $task_id, int $user_id): Task
     {
         // Find the task by its ID
-        $task = Task::findOrFail($task_id);
+        $task = $this->taskRepository->getTaskById($task_id);
+
 
         // Check if the task belongs to the user
         if ($task->user_id !== $user_id) {
@@ -91,7 +85,7 @@ class TaskService
     {
         // Find the task by its ID
         try {
-            $task = Task::findOrFail($task_id);
+            $task = $this->taskRepository->getTaskById($task_id);
 
             // Check if the task has uncompleted subtasks
             if ($this->hasUncompletedSubtasks($task)) {
@@ -133,29 +127,17 @@ class TaskService
      * Delete a task if it's not done, otherwise throw an exception.
      *
      * @param int $task_id
-     * @param int $user_id
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function deleteTask(int $task_id, int $user_id): \Illuminate\Http\JsonResponse
+    public function deleteTask(int $task_id): \Illuminate\Http\JsonResponse
     {
         try {
-            $task = Task::findOrFail($task_id);
+            $task = $this->taskRepository->getTaskById($task_id);
 
-            // Check if the task belongs to the user
-            if ($task->user_id !== $user_id) {
-                throw new \Exception("You don't have permission to delete this task.");
-            }
+            $task->delete();
+            return response()->json(['message' => 'Task deleted successfully.']);
 
-            // Check if the task is not done
-            if ($task->status !== TaskStatusEnum::DONE) {
-                // Delete the task
-                $task->delete();
-                return response()->json(['message' => 'Task deleted successfully.']);
-            } else {
-                // If task is done, throw an exception
-                throw new \Exception("This task is done and cannot be deleted.");
-            }
         } catch (ModelNotFoundException $e) {
             throw new \Exception($e->getMessage());
         }

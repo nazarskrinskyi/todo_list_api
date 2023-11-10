@@ -8,8 +8,10 @@ use App\Http\Requests\DeleteTaskRequest;
 use App\Http\Requests\FilterTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
 {
@@ -58,14 +60,14 @@ class TaskController extends BaseController
      */
     public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
+        $task = Task::findOrFail($id);
+        $this->authorize('update', $task);
         $data = $request->validated();
-        $user_id = $data['user_id'];
-        unset($data['user_id']);
         $data['updated_at'] = Carbon::now();
         $taskDTO = new TaskDTO(...$data);
 
         // Update the existing task with the provided data
-        $task = $this->service->updateTask($taskDTO, $id, $user_id);
+        $task = $this->service->updateTask($taskDTO, $id, Auth::id());
 
         // Return the updated task as a JSON resource
         return new TaskResource($task);
@@ -90,17 +92,17 @@ class TaskController extends BaseController
     /**
      * Delete a task.
      *
-     * @param DeleteTaskRequest $request
      * @param int $id
-     * @return bool
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(DeleteTaskRequest $request, int $id): bool
+    public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
-        $data = $request->validated();
+        $task = Task::findOrFail($id);
+        $this->authorize('delete', $task);
 
         // Delete the task with the given ID
-        return $this->service->deleteTask($id, $data['user_id']);
+        return $this->service->deleteTask($id);
     }
 }
 

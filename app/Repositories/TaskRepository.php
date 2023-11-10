@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\DTO\TaskDTO;
 use App\Enums\TaskStatusEnum;
+use App\Http\Filters\TaskFilter;
 use App\Models\Task;
+use mysql_xdevapi\Collection;
 
 /**
  * TaskRepository class handles the data interaction for tasks.
@@ -16,12 +18,21 @@ class TaskRepository implements TaskRepositoryInterface
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllTasks(): \Illuminate\Database\Eloquent\Collection
+    public function getFilteredTasks(array $data): \Illuminate\Database\Eloquent\Collection
     {
-        // Retrieve all tasks from the 'tasks' table
-        return Task::all();
+        // Create a TaskFilter instance with filtered query parameters
+        $filter = app()->make(TaskFilter::class, ['queryParams' => array_filter($data)]);
+        // Apply filters to Task model using the TaskFilter instance
+        $filter_query = Task::filter($filter);
+        // Retrieve filtered tasks
+        return $filter_query->get();
     }
 
+    public function getTaskById(int $task_id): Task
+    {
+        // Retrieve tasks from the 'tasks' table
+        return Task::findOrFail($task_id);
+    }
     /**
      * Create a new task in the database based on the provided TaskDTO instance.
      *
