@@ -88,7 +88,7 @@ class TaskService
             $task = $this->taskRepository->getTaskById($task_id);
 
             // Check if the task has uncompleted subtasks
-            if ($this->hasUncompletedSubtasks($task)) {
+            if ($this->taskRepository->hasUncompletedSubtasks($task)) {
                 throw new \Exception("Task has uncompleted subtasks and cannot be marked as done.");
             }
 
@@ -110,18 +110,6 @@ class TaskService
      * @param Task $task
      * @return bool
      */
-    private function hasUncompletedSubtasks(Task $task): bool
-    {
-        // Recursively check if the task or any of its subtasks have uncompleted status
-        foreach ($task->subtasks as $subtask) {
-            if ($subtask->status !== TaskStatusEnum::DONE || $this->hasUncompletedSubtasks($subtask)) {
-                return true;
-            }
-        }
-
-        // If no uncompleted subtasks found, return false
-        return false;
-    }
 
     /**
      * Delete a task if it's not done, otherwise throw an exception.

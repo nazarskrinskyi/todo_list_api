@@ -6,26 +6,30 @@ use App\DTO\TaskDTO;
 use App\Enums\TaskStatusEnum;
 use App\Http\Filters\TaskFilter;
 use App\Models\Task;
-use mysql_xdevapi\Collection;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * TaskRepository class handles the data interaction for tasks.
  */
 class TaskRepository implements TaskRepositoryInterface
 {
+
     /**
      * Get all tasks from the database.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param array $data
+     * @return Collection
+     * @throws BindingResolutionException
      */
-    public function getFilteredTasks(array $data): \Illuminate\Database\Eloquent\Collection
+    public function getFilteredTasks(array $data): Collection
     {
         // Create a TaskFilter instance with filtered query parameters
         $filter = app()->make(TaskFilter::class, ['queryParams' => array_filter($data)]);
         // Apply filters to Task model using the TaskFilter instance
-        $filter_query = Task::filter($filter);
+        $filterQuery = Task::filter($filter);
         // Retrieve filtered tasks
-        return $filter_query->get();
+        return $filterQuery->get();
     }
 
     public function getTaskById(int $task_id): Task
@@ -55,6 +59,18 @@ class TaskRepository implements TaskRepositoryInterface
 
         // Return the created task instance
         return $task;
+    }
+    public function hasUncompletedSubtasks(Task $task): bool
+    {
+        // Recursively check if the task or any of its subtasks have uncompleted status
+        foreach ($task->subtasks as $subtask) {
+            if ($subtask->status !== TaskStatusEnum::DONE || $this->hasUncompletedSubtasks($subtask)) {
+                return true;
+            }
+        }
+
+        // If no uncompleted subtasks found, return false
+        return false;
     }
 
     /**

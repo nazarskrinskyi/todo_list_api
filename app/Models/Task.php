@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @method static find(mixed $taskId) - Find a task by its ID.
  * @method static findOrFail(mixed $taskId) - Find a task by its ID or throw an exception if not found.
+ * @method static filter(mixed $filter)
  * @property mixed $user_id - User ID associated with the task.
  */
 class Task extends Model
