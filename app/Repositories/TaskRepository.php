@@ -8,6 +8,7 @@ use App\Http\Filters\TaskFilter;
 use App\Models\Task;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * TaskRepository class handles the data interaction for tasks.
@@ -50,7 +51,7 @@ class TaskRepository implements TaskRepositoryInterface
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
         $task->parent_id = $taskDTO->parent_id;
-        $task->user_id = $taskDTO->user_id;
+        $task->user_id = Auth::id();
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
 

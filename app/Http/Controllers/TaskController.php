@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\DTO\TaskDTO;
 use App\Http\Requests\CreateTaskRequest;
-use App\Http\Requests\DeleteTaskRequest;
 use App\Http\Requests\FilterTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
@@ -41,6 +40,7 @@ class TaskController extends BaseController
     public function store(CreateTaskRequest $request): TaskResource
     {
         $data = $request->validated();
+
         $taskDTO = new TaskDTO(...$data);
 
         // Create a new task using the provided data

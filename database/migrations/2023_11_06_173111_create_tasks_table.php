@@ -19,17 +19,15 @@ return new class extends Migration
             $table->string('status');
             $table->unsignedTinyInteger('priority');
             $table->string('title',255);
-            $table->text('description')->nullable();
+            $table->string('description', 500)->nullable();
             $table->timestamps();
             $table->timestamp('completed_at')->nullable();
             $table->index('status');
-            $table->index('title');
             $table->index('priority');
-            $table->index('description');
+            $table->fullText('title');
+            $table->fullText('description');
         });
 
-        // Full-text index for title and description
-        DB::statement('ALTER TABLE tasks ADD FULLTEXT INDEX fulltext_title_description (title, description)');
     }
 
     /**
@@ -38,5 +36,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tasks');
+
     }
 };

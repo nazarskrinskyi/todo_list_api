@@ -20,7 +20,7 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => $status = $this->faker->randomElement(TaskStatusEnum::values()),
+            'status' => $status = $this->faker->randomElement(TaskStatusEnum::class),
             'parent_id' => $this->faker->numberBetween(1, 10),
             'priority' => $this->faker->numberBetween(1, 5),
             'title' => $this->faker->sentence,
