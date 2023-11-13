@@ -11,6 +11,7 @@ class TaskPolicy
     public function update(User $user, Task $task): bool
     {
         // User can only update their own tasks
+        dd($user);
         return $user->id === $task->user_id;
     }
 

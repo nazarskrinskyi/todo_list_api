@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class FilterTaskRequest extends FormRequest
 {
@@ -11,8 +12,7 @@ class FilterTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-        return $user !== null;
+        return true;
     }
 
     /**

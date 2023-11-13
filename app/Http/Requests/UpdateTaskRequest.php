@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -11,8 +12,8 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-        return $user !== null;
+        dd(Auth::user());
+        return true;
     }
 
     /**
