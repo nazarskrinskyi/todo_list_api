@@ -18,7 +18,7 @@ description, status, priority, created_at, completed_at).
 
 ### Example Usage:
 ```http request
-POST /tasks?title=query&status=todo&priority=desc&created_at=asc
+POST / ?title=query&status=todo&priority=desc&created_at=asc
 ```
 #### Response:
 ```json

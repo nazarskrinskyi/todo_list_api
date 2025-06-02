@@ -26,6 +26,7 @@ class FilterTaskRequest extends FormRequest
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'status' => 'nullable|string',
+            'user_id' => 'nullable|exists:users,id',
             'priority' => 'nullable|string',
             'created_at' => 'nullable',
             'completed_at' => 'nullable'

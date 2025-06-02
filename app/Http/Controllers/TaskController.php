@@ -10,7 +10,6 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 class TaskController extends BaseController
 {
@@ -24,11 +23,11 @@ class TaskController extends BaseController
     {
         $data = $request->validated();
 
-        // Get tasks based on the provided filters
         $tasks = $this->service->getAllTasks($data);
 
-        // Return the tasks as a JSON resource
-        return TaskResource::collection($tasks);
+        return TaskResource::collection($tasks)->additional([
+            'tasks' => TaskResource::collection($tasks)
+        ]);
     }
 
     /**
@@ -43,10 +42,8 @@ class TaskController extends BaseController
 
         $taskDTO = new TaskDTO(...$data);
 
-        // Create a new task using the provided data
         $task = $this->service->createTask($taskDTO);
 
-        // Return the created task as a JSON resource
         return new TaskResource($task);
     }
 
@@ -61,15 +58,16 @@ class TaskController extends BaseController
     public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
         $task = Task::findOrFail($id);
-        $this->authorize('update', $task);
+        if ($id !== $task->user_id) {
+            $this->authorize('update', $task);
+        }
+
         $data = $request->validated();
         $data['updated_at'] = Carbon::now();
         $taskDTO = new TaskDTO(...$data);
 
-        // Update the existing task with the provided data
-        $task = $this->service->updateTask($taskDTO, $id, Auth::id());
+        $task = $this->service->updateTask($taskDTO, $id, $taskDTO->user_id);
 
-        // Return the updated task as a JSON resource
         return new TaskResource($task);
     }
 
@@ -82,10 +80,8 @@ class TaskController extends BaseController
      */
     public function markAsDone(int $id): TaskResource
     {
-        // Mark the task with the given ID as done
         $task = $this->service->markTaskAsDone($id);
 
-        // Return the updated task as a JSON resource
         return new TaskResource($task);
     }
 
@@ -99,9 +95,10 @@ class TaskController extends BaseController
     public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
         $task = Task::findOrFail($id);
-        $this->authorize('delete', $task);
+        if ($id !== $task->user_id) {
+            $this->authorize('delete', $task);
+        }
 
-        // Delete the task with the given ID
         return $this->service->deleteTask($id);
     }
 }

@@ -12,7 +12,6 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        dd(Auth::user());
         return true;
     }
 
@@ -27,6 +26,7 @@ class UpdateTaskRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|string',
+            'user_id' => 'required|exists:users,id',
             'priority' => 'required|integer',
         ];
     }

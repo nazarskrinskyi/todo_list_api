@@ -25,11 +25,9 @@ class TaskRepository implements TaskRepositoryInterface
      */
     public function getFilteredTasks(array $data): Collection
     {
-        // Create a TaskFilter instance with filtered query parameters
         $filter = app()->make(TaskFilter::class, ['queryParams' => array_filter($data)]);
-        // Apply filters to Task model using the TaskFilter instance
         $filterQuery = Task::filter($filter);
-        // Retrieve filtered tasks
+
         return $filterQuery->get();
     }
 
@@ -51,14 +49,12 @@ class TaskRepository implements TaskRepositoryInterface
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
         $task->parent_id = $taskDTO->parent_id;
-        $task->user_id = Auth::id();
+        $task->user_id = $taskDTO->user_id;
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
 
-        // Save the task to the database
         $task->save();
 
-        // Return the created task instance
         return $task;
     }
     public function hasUncompletedSubtasks(Task $task): bool

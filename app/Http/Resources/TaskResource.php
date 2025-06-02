@@ -25,7 +25,6 @@ class TaskResource extends JsonResource
             'updated_at' => $this->updated_at, // Task last update timestamp
             'completed_at' => $this->completed_at, // Task completion timestamp
 
-            // Include the parent task details using TaskResource to handle recursive nesting
             'parent_task' => new TaskResource($this->parentTask),
 
             // Include subtasks (if any) as an array of TaskResource instances

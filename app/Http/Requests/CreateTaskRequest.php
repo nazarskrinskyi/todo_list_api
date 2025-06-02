@@ -26,6 +26,7 @@ class CreateTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:tasks,id',
             'status' => 'required|string',
+            'user_id' => 'required|exists:users,id',
             'priority' => 'required|integer',
         ];
     }
