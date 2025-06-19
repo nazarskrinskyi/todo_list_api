@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TaskResource extends JsonResource
+class TaskShortResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -23,11 +23,7 @@ class TaskResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'completed_at' => $this->completed_at,
-            'user_id' =>  $this->user_id,
-            'parent_id' =>  $this->parent_id,
-
-            'parent_task' => $this->parentTask ? new TaskShortResource($this->parentTask) : null,
-            'subtasks' => TaskShortResource::collection($this->subtasks),
+            'user_id' => $this->user_id,
         ];
     }
 }

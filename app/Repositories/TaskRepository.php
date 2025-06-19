@@ -49,7 +49,7 @@ class TaskRepository implements TaskRepositoryInterface
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
         $task->parent_id = $taskDTO->parent_id;
-        $task->user_id = $taskDTO->user_id;
+        $task->user_id = $taskDTO->user_id ?? 1;
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
 
@@ -85,6 +85,7 @@ class TaskRepository implements TaskRepositoryInterface
         // Update task attributes with data from TaskDTO
         $task->title = $taskDTO->title;
         $task->description = $taskDTO->description;
+        $task->parent_id = $taskDTO->parent_id;
         $task->priority = $taskDTO->priority;
         $task->status = $taskDTO->status;
         $task->updated_at = $taskDTO->updated_at;

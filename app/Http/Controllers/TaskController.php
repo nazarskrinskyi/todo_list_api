@@ -7,9 +7,11 @@ use App\Http\Requests\CreateTaskRequest;
 use App\Http\Requests\FilterTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskController extends BaseController
 {
@@ -57,11 +59,6 @@ class TaskController extends BaseController
      */
     public function update(UpdateTaskRequest $request, int $id): TaskResource
     {
-        $task = Task::findOrFail($id);
-        if ($id !== $task->user_id) {
-            $this->authorize('update', $task);
-        }
-
         $data = $request->validated();
         $data['updated_at'] = Carbon::now();
         $taskDTO = new TaskDTO(...$data);
@@ -76,7 +73,7 @@ class TaskController extends BaseController
      *
      * @param int $id
      * @return TaskResource
-     * @throws \Exception
+     * @throws Exception
      */
     public function markAsDone(int $id): TaskResource
     {
@@ -90,15 +87,11 @@ class TaskController extends BaseController
      *
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @throws AuthorizationException
+     * @throws Exception
      */
-    public function destroy(int $id): \Illuminate\Http\JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $task = Task::findOrFail($id);
-        if ($id !== $task->user_id) {
-            $this->authorize('delete', $task);
-        }
-
         return $this->service->deleteTask($id);
     }
 }
